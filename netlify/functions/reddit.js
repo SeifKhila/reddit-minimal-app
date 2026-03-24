@@ -1,5 +1,5 @@
-export async function handler(event) {
-  const path = event.queryStringParameters.path;
+exports.handler = async function (event) {
+  const path = event.queryStringParameters && event.queryStringParameters.path;
 
   if (!path) {
     return {
@@ -9,7 +9,27 @@ export async function handler(event) {
   }
 
   try {
-    const response = await fetch(`https://www.reddit.com/${path}`);
+    if (typeof fetch !== "function") {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Fetch API is not available in function runtime" })
+      };
+    }
+
+    const response = await fetch(`https://www.reddit.com/${path}`, {
+      headers: {
+        "User-Agent": "reddit-minimal-app/1.0",
+        Accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ error: "Reddit request failed" })
+      };
+    }
+
     const data = await response.json();
 
     return {
@@ -22,7 +42,10 @@ export async function handler(event) {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Failed to fetch Reddit data" })
+      body: JSON.stringify({
+        error: "Failed to fetch Reddit data",
+        message: error.message
+      })
     };
   }
-}
+};
