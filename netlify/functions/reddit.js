@@ -1,88 +1,75 @@
-exports.handler = async function (event) {
+const cache = new Map();
+const CACHE_MS = 120000;
+
+export async function handler(event) {
   const path = event.queryStringParameters && event.queryStringParameters.path;
 
   if (!path) {
     return {
       statusCode: 400,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ error: "Missing path parameter" })
     };
   }
 
   try {
-    if (typeof fetch !== "function") {
+    const cleanPath = decodeURIComponent(path).replace(/^\/+/, "");
+    const pathWithoutQuery = cleanPath.split("?")[0];
+    const apiPath = pathWithoutQuery.replace(/^\/+/, "");
+
+    const cached = cache.get(apiPath);
+    const now = Date.now();
+    if (cached && now - cached.ts < CACHE_MS) {
       return {
-        statusCode: 500,
+        statusCode: 200,
         headers: {
-          "Access-Control-Allow-Origin": "*"
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ error: "Fetch API is not available in function runtime" })
+        body: cached.body
       };
     }
 
-    const cleanPath = decodeURIComponent(path).replace(/^\/+/, "");
-    const requestHeaders = {
-      "User-Agent": "Mozilla/5.0 (compatible; reddit-minimal-app/1.0)",
-      Accept: "application/json,text/plain,*/*"
-    };
-
-    let response = await fetch(`https://www.reddit.com/${cleanPath}`, {
-      headers: requestHeaders
+    const response = await fetch(`https://www.reddit.com/${apiPath}`, {
+      headers: {
+        "User-Agent": "web:redditminimalapp:v1.0 (by /u/redditminimalapp)",
+        "Accept": "application/json"
+      }
     });
 
-    // some runtimes get blocked on www, so try old.reddit as fallback
-    if (!response.ok) {
-      response = await fetch(`https://old.reddit.com/${cleanPath}`, {
-        headers: requestHeaders
-      });
-    }
-
     if (!response.ok) {
       return {
-        statusCode: 502,
+        statusCode: response.status,
         headers: {
-          "Access-Control-Allow-Origin": "*"
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          error: "Reddit request failed",
-          upstreamStatus: response.status
-        })
+        body: JSON.stringify({ error: "Reddit request failed" })
       };
     }
 
-    const text = await response.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (parseError) {
-      return {
-        statusCode: 502,
-        headers: {
-          "Access-Control-Allow-Origin": "*"
-        },
-        body: JSON.stringify({
-          error: "Invalid JSON from Reddit",
-          preview: text.slice(0, 120)
-        })
-      };
-    }
+    const body = await response.text();
+    cache.set(apiPath, { ts: now, body });
 
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(data)
+      body
     };
   } catch (error) {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        error: "Failed to fetch Reddit data",
-        message: error.message
-      })
+      body: JSON.stringify({ error: "Failed to fetch Reddit data" })
     };
   }
-};
+}

@@ -1,6 +1,8 @@
 // this file handles simple api calls to reddit
-// use netlify function proxy to avoid cors in production
-export const API_ROOT = '/.netlify/functions/reddit?path=';
+// use reddit proxy in local dev, netlify function in production
+export const API_ROOT = process.env.NODE_ENV === 'development'
+  ? ''
+  : '/.netlify/functions/reddit?path=';
 
 const redditHeaders = {
   'User-Agent': 'reddit-client',
@@ -28,18 +30,9 @@ export const getSubredditPosts = async (subreddit) => {
   // this gets posts from reddit api
   const normalized = normalizeRedditPath(subreddit);
   const url = `${API_ROOT}${normalized}.json`;
-
-  try {
-    // fetch posts from reddit
-    const json = await fetchRedditJson(url);
-    return json.data.children.map((post) => post.data);
-  } catch (error) {
-    // Optional fallback if the first request is blocked
-    // Example: ?raw_json=1
-    const fallbackUrl = `${url}?raw_json=1`;
-    const json = await fetchRedditJson(fallbackUrl);
-    return json.data.children.map((post) => post.data);
-  }
+  // fetch posts from reddit
+  const json = await fetchRedditJson(url);
+  return json.data.children.map((post) => post.data);
 };
 
 export const getSubreddits = async () => {
@@ -53,17 +46,9 @@ export const getPostComments = async (permalink) => {
   // this gets comments for one post
   const normalized = normalizeRedditPath(permalink);
   const url = `${API_ROOT}${normalized}.json`;
-
-  try {
-    const json = await fetchRedditJson(url);
-    // json[1] is the comments listing for the submission.
-    // Each child has a "data" object with the comment info.
-    if (!json[1] || !json[1].data || !json[1].data.children) return [];
-    return json[1].data.children.map((entry) => entry.data);
-  } catch (error) {
-    const fallbackUrl = `${url}?raw_json=1`;
-    const json = await fetchRedditJson(fallbackUrl);
-    if (!json[1] || !json[1].data || !json[1].data.children) return [];
-    return json[1].data.children.map((entry) => entry.data);
-  }
+  const json = await fetchRedditJson(url);
+  // json[1] is the comments listing for the submission.
+  // Each child has a "data" object with the comment info.
+  if (!json[1] || !json[1].data || !json[1].data.children) return [];
+  return json[1].data.children.map((entry) => entry.data);
 };
