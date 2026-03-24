@@ -1,16 +1,18 @@
 // this file handles simple api calls to reddit
-// use allorigins proxy to avoid cors in production
-export const API_ROOT = 'https://api.allorigins.win/raw?url=https://www.reddit.com';
+// use netlify function proxy to avoid cors in production
+export const API_ROOT = '/.netlify/functions/reddit?path=';
 
 const redditHeaders = {
   'User-Agent': 'reddit-client',
 };
 
-// Normalize Reddit paths like "/r/pics/" -> "/r/pics"
-// so we can safely append ".json" without producing "/.json".
+// normalize reddit path so it works with proxy query param
 const normalizeRedditPath = (path) => {
   if (!path) return '';
-  return path.endsWith('/') ? path.slice(0, -1) : path;
+  const withoutTrailingSlash = path.endsWith('/') ? path.slice(0, -1) : path;
+  return withoutTrailingSlash.startsWith('/')
+    ? withoutTrailingSlash.slice(1)
+    : withoutTrailingSlash;
 };
 
 const fetchRedditJson = async (url) => {
@@ -42,7 +44,7 @@ export const getSubredditPosts = async (subreddit) => {
 
 export const getSubreddits = async () => {
   // this gets subreddit list for sidebar
-  const url = `${API_ROOT}/subreddits.json`;
+  const url = `${API_ROOT}subreddits.json`;
   const json = await fetchRedditJson(url);
   return json.data.children.map((subreddit) => subreddit.data);
 };
