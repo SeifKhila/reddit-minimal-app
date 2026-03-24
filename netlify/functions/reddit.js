@@ -16,12 +16,21 @@ exports.handler = async function (event) {
       };
     }
 
-    const response = await fetch(`https://www.reddit.com/${path}`, {
-      headers: {
-        "User-Agent": "reddit-minimal-app/1.0",
-        Accept: "application/json"
-      }
+    const requestHeaders = {
+      "User-Agent": "Mozilla/5.0 (compatible; reddit-minimal-app/1.0)",
+      Accept: "application/json,text/plain,*/*"
+    };
+
+    let response = await fetch(`https://www.reddit.com/${path}`, {
+      headers: requestHeaders
     });
+
+    // some runtimes get blocked on www, so try old.reddit as fallback
+    if (!response.ok) {
+      response = await fetch(`https://old.reddit.com/${path}`, {
+        headers: requestHeaders
+      });
+    }
 
     if (!response.ok) {
       return {
