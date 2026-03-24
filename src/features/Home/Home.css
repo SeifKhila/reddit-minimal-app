@@ -1,0 +1,31 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.error button {
+  color: var(--color-text-invert);
+  background: var(--color-branding);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  padding: var(--spacing-2) var(--spacing-4);
+  cursor: pointer;
+}
+
+/* keep post layout smaller so it looks more like real reddit and easier to read */
+.posts-container {
+  max-width: 700px;
+  margin: 0;
+  padding: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  /* mobile layout changes here */
+  .posts-container {
+    max-width: 100%;
+    padding: 0;
+  }
+}

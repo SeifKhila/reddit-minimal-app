@@ -1,0 +1,159 @@
+.header .logo {
+  font-weight: bold;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.header {
+  /* top bar container */
+  color: var(--color-branding);
+  width: 100%;
+  /* light gradient to make header look a bit nicer */
+  background: linear-gradient(to right, #ffffff, #f1f4f9);
+  border-bottom: 1px solid #ddd;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header .logo-icon {
+  margin-right: var(--spacing-1);
+  font-size: 2rem;
+  color: var(--color-branding);
+}
+
+.header .logo p {
+  color: var(--color-branding);
+}
+
+.header span {
+  color: var(--color-text-header);
+}
+
+.top-controls {
+  /* keeping inputs square and aligned for cleaner UI */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-controls select,
+.top-controls input {
+  height: 36px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.top-controls select:hover,
+.top-controls input:hover {
+  border-color: #aaa;
+}
+
+.top-controls select:focus,
+.top-controls input:focus {
+  outline: none;
+  border-color: #888;
+  box-shadow: none;
+}
+
+.top-controls input {
+  width: 220px;
+  background: #ffffff;
+}
+
+.top-controls select {
+  width: 150px;
+  background-color: #ffffff;
+  color: var(--color-text-body);
+  font-weight: 400;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 28px;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid #777;
+  border-bottom: 1.5px solid #777;
+  transform: translateY(-60%) rotate(45deg);
+  pointer-events: none;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search input {
+  flex-grow: 1;
+}
+
+.search button {
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search button:hover {
+  border-color: #aaa;
+  background: #fafafa;
+}
+
+.search button:focus {
+  outline: none;
+  border-color: #888;
+  box-shadow: none;
+}
+
+@media only screen and (max-width: 768px) {
+  /* basic responsive layout for smaller screens */
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px;
+  }
+
+  .top-controls {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .select-wrapper,
+  .search,
+  .search input,
+  .top-controls select {
+    width: 100%;
+  }
+
+  .search button {
+    width: 36px;
+  }
+}

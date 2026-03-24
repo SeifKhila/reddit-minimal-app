@@ -1,0 +1,83 @@
+:root {
+  --color-background: #f5f7fb;
+  --color-background-secondary: #f5f7fa;
+  --color-foreground: #ffffff;
+  --color-border: #e5e7eb;
+  /* adjusted text colours for better readability */
+  --color-text-header: #111827;
+  --color-text-body: #6b7280;
+  --color-text-secondary: #6b7280;
+  --color-text-invert: #ffffff;
+  --color-text-link: #3b82f6;
+  /* using one main accent colour to keep design consistent */
+  --color-branding: #3b82f6;
+  --color-branding-transparent: #3b82f620;
+
+  --color-alert: #ff304f;
+  --color-success: #45b81f;
+  --color-on-hover: #0000000f;
+
+  --box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  --box-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+
+  --spacing-0: 4px;
+  --spacing-1: 8px;
+  --spacing-2: 16px;
+  --spacing-3: 24px;
+  --spacing-4: 36px;
+  --spacing-5: 64px;
+
+  --radius: 4px;
+  --radius-2: 8px;
+}
+
+html,
+body {
+  /* added soft background colour so UI feels less plain */
+  background: var(--color-background);
+  color: var(--color-text-body);
+}
+
+p {
+  margin: 0;
+}
+
+/* main container to center app and control width */
+.app-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* layout structure */
+.content-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.content-layout main {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-layout aside {
+  width: 260px;
+  flex-shrink: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  /* basic responsive layout for smaller screens */
+  .app-container {
+    padding: 12px;
+  }
+
+  .content-layout {
+    flex-direction: column;
+  }
+
+  .content-layout aside {
+    width: 100%;
+  }
+}
