@@ -1,6 +1,6 @@
 // this file handles simple api calls to reddit
-// Use relative URLs so CRA dev-server can proxy and avoid browser CORS issues.
-export const API_ROOT = '';
+// use full reddit api url so production does not call local domain
+export const API_ROOT = 'https://www.reddit.com';
 
 const redditHeaders = {
   'User-Agent': 'reddit-client',
