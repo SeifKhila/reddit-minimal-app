@@ -6,7 +6,9 @@ const initialState = {
   error: false,
   isLoading: false,
   searchTerm: '',
-  selectedSubreddit: '/r/pics',
+  // Feed selection for the DummyJSON-backed Reddit-style app.
+  // Possible values: "popular", "history", "crime", "life", "love", ...
+  selectedSubreddit: 'popular',
 };
 
 // redux state for posts, search and selected subreddit
@@ -38,10 +40,6 @@ const redditSlice = createSlice({
       state.selectedSubreddit = action.payload;
       state.searchTerm = '';
     },
-    toggleShowingComments(state, action) {
-      state.posts[action.payload].showingComments = !state.posts[action.payload]
-        .showingComments;
-    },
     startGetComments(state, action) {
       // If we're hiding comment, don't fetch the comments.
       state.posts[action.payload].showingComments = !state.posts[action.payload]
@@ -53,13 +51,60 @@ const redditSlice = createSlice({
       state.posts[action.payload].errorComments = false;
     },
     getCommentsSuccess(state, action) {
+      const index = action.payload.index;
       state.posts[action.payload.index].loadingComments = false;
       state.posts[action.payload.index].errorComments = false;
-      state.posts[action.payload.index].comments = action.payload.comments;
+      const existingComments = state.posts[index].comments || [];
+      const fetchedComments = action.payload.comments || [];
+
+      // If the user added a local comment while the API fetch was in flight,
+      // keep the local one instead of overwriting.
+      const mergedComments = existingComments.length
+        ? [...existingComments, ...fetchedComments]
+        : fetchedComments;
+
+      state.posts[index].comments = mergedComments;
+      state.posts[index].num_comments = mergedComments.length;
+      state.posts[index].commentsLoaded = true;
     },
     getCommentsFailed(state, action) {
       state.posts[action.payload].loadingComments = false;
       state.posts[action.payload].errorComments = true;
+    },
+    // Local-only comments (no backend): used for "Add Comment" UI.
+    addLocalComment(state, action) {
+      const { index, comment } = action.payload;
+      if (!state.posts[index]) return;
+
+      state.posts[index].comments.push(comment);
+      state.posts[index].num_comments = state.posts[index].comments.length;
+      state.posts[index].showingComments = true;
+      state.posts[index].loadingComments = false;
+      state.posts[index].errorComments = false;
+      state.posts[index].commentsLoaded = true;
+    },
+    // Local-only comment editing: no backend, just update Redux in-memory.
+    editLocalComment(state, action) {
+      const { index, commentId, newBody } = action.payload;
+      if (!state.posts[index]) return;
+
+      const comment = state.posts[index].comments.find(
+        (c) => c.id === commentId
+      );
+      if (!comment) return;
+
+      comment.body = newBody;
+    },
+    // Local-only comment deletion: removes immediately from Redux in-memory.
+    deleteLocalComment(state, action) {
+      const { index, commentId } = action.payload;
+      if (!state.posts[index]) return;
+
+      state.posts[index].comments = state.posts[index].comments.filter(
+        (c) => c.id !== commentId
+      );
+      state.posts[index].num_comments = state.posts[index].comments.length;
+      state.posts[index].commentsLoaded = true;
     },
   },
 });
@@ -71,10 +116,12 @@ export const {
   startGetPosts,
   setSearchTerm,
   setSelectedSubreddit,
-  toggleShowingComments,
   getCommentsFailed,
   getCommentsSuccess,
   startGetComments,
+  addLocalComment,
+  editLocalComment,
+  deleteLocalComment,
 } = redditSlice.actions;
 
 export default redditSlice.reducer;
@@ -82,7 +129,7 @@ export default redditSlice.reducer;
 // fetch posts from reddit and store them in redux
 export const fetchPosts = (subreddit) => async (dispatch) => {
   try {
-    // this fetches posts from the api
+    // Fetch posts for the active feed (popular or a tag-based category).
     dispatch(startGetPosts());
     const posts = await getSubredditPosts(subreddit);
 
@@ -93,6 +140,7 @@ export const fetchPosts = (subreddit) => async (dispatch) => {
       comments: [],
       loadingComments: false,
       errorComments: false,
+      commentsLoaded: false,
     }));
     dispatch(getPostsSuccess(postsWithMetadata));
   } catch (error) {
@@ -100,12 +148,12 @@ export const fetchPosts = (subreddit) => async (dispatch) => {
   }
 };
 
-// fetch comments from reddit and store them in redux
-export const fetchComments = (index, permalink) => async (dispatch) => {
+// fetch comments for one post and store them in redux
+export const fetchComments = (index, postId) => async (dispatch) => {
   try {
     dispatch(startGetComments(index));
-    // this fetches comments for one post
-    const comments = await getPostComments(permalink);
+    // Fetch comments for one post id.
+    const comments = await getPostComments(postId);
     dispatch(getCommentsSuccess({ index, comments }));
   } catch (error) {
     dispatch(getCommentsFailed(index));

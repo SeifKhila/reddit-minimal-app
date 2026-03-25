@@ -1,24 +1,24 @@
 :root {
-  --color-background: #f5f7fb;
-  --color-background-secondary: #f5f7fa;
-  --color-foreground: #ffffff;
-  --color-border: #e5e7eb;
-  /* adjusted text colours for better readability */
-  --color-text-header: #111827;
-  --color-text-body: #6b7280;
-  --color-text-secondary: #6b7280;
-  --color-text-invert: #ffffff;
-  --color-text-link: #3b82f6;
+  /* Dark theme palette (high contrast, clean + readable) */
+  --color-background: #0f172a;
+  --color-background-secondary: #0b1224;
+  --color-foreground: #1e293b;
+  --color-border: #334155;
+  --color-text-header: #f1f5f9;
+  --color-text-body: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-invert: #0f172a;
+  --color-text-link: #60a5fa;
   /* using one main accent colour to keep design consistent */
   --color-branding: #3b82f6;
   --color-branding-transparent: #3b82f620;
 
   --color-alert: #ff304f;
-  --color-success: #45b81f;
-  --color-on-hover: #0000000f;
+  --color-success: #22c55e;
+  --color-on-hover: rgba(148, 163, 184, 0.12);
 
-  --box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
-  --box-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  --box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+  --box-shadow-hover: 0 2px 10px rgba(0, 0, 0, 0.55) !important;
 
   --spacing-0: 4px;
   --spacing-1: 8px;
@@ -29,12 +29,18 @@
 
   --radius: 4px;
   --radius-2: 8px;
+
+  --header-height: 80px;
 }
 
 html,
 body {
-  /* added soft background colour so UI feels less plain */
-  background: var(--color-background);
+  background: radial-gradient(
+      circle at 12% 0%,
+      rgba(59, 130, 246, 0.3) 0%,
+      rgba(59, 130, 246, 0) 55%
+    ),
+    linear-gradient(180deg, #0f172a 0%, #0b1224 100%);
   color: var(--color-text-body);
 }
 
@@ -45,9 +51,10 @@ p {
 /* main container to center app and control width */
 .app-container {
   max-width: 1100px;
-  margin: 0 auto;
+  margin: var(--header-height) auto 0 auto;
   padding: 20px;
   box-sizing: border-box;
+  padding-bottom: 28px;
 }
 
 /* layout structure */
@@ -65,6 +72,10 @@ p {
 .content-layout aside {
   width: 260px;
   flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+  z-index: 2;
 }
 
 @media only screen and (max-width: 768px) {
@@ -79,5 +90,35 @@ p {
 
   .content-layout aside {
     width: 100%;
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
+
+  :root {
+    --header-height: 120px;
+  }
+}
+
+.app-footer {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #1f2a44;
+}
+
+.app-footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.app-footer-title {
+  color: var(--color-text-header);
+  font-weight: 900;
+}
+
+.app-footer-sub,
+.app-footer-year {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
 }

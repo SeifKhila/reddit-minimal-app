@@ -24,35 +24,28 @@ const Subreddits = () => {
       <h2>Subreddits</h2>
       <ul className="subreddits-list">
         {subreddits.map((subreddit) => {
-          // clean reddit icon url
-          // fallback if image is broken
-          // prevents console errors
-          const rawIcon = subreddit.icon_img || subreddit.community_icon;
-          const cleanIcon = rawIcon ? rawIcon.split('?')[0] : '';
-
-          const isValidIcon =
-            cleanIcon && cleanIcon.startsWith('http');
+          const borderColor = subreddit.primary_color || '#ddd';
+          const firstLetter = (
+            subreddit.display_name || subreddit.id || '?'
+          ).trim()[0].toUpperCase();
 
           const placeholderSrc = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
-            `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="100%" height="100%" fill="#e9e9e9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="10" fill="#777">R</text></svg>`
+            `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44"><circle cx="22" cy="22" r="20" fill="${borderColor}"/><text x="22" y="27" font-family="Arial" font-size="16" font-weight="700" text-anchor="middle" fill="#ffffff">${firstLetter}</text></svg>`
           )}`;
-          const iconSrc = isValidIcon ? cleanIcon : placeholderSrc;
-          const borderColor = subreddit.primary_color || '#ddd';
+
+          // DummyJSON icons are safe data URIs, but keep a local fallback anyway.
+          const iconSrc = subreddit.icon_img || subreddit.community_icon || placeholderSrc;
 
           return (
-            // match url with or without trailing slash
             <li
               key={subreddit.id}
               className={`${
-                selectedSubreddit.replace(/\/$/, '') ===
-                subreddit.url.replace(/\/$/, '')
-                  ? `selected-subreddit`
-                  : ''
+                selectedSubreddit === subreddit.id ? `selected-subreddit` : ''
               }`}
             >
               <button
                 type="button"
-                onClick={() => dispatch(setSelectedSubreddit(subreddit.url))}
+                onClick={() => dispatch(setSelectedSubreddit(subreddit.id))}
               >
                 <img
                   src={iconSrc}

@@ -1,38 +1,40 @@
-# Reddit Minimal App
+# RedditMinimal (DummyJSON Visual Feed)
 
-A simple Reddit-style web application built with React and Redux.
-
-Users can browse posts, switch between subreddits, and view live data from the Reddit API.
+Reddit-style discovery feed built with React and Redux.
+This version is powered by DummyJSON and uses Picsum seeded images so the feed feels visual.
 
 ---
 
 ## Features
 
-- Browse posts from different subreddits  
-- Change subreddit using dropdown  
-- Search for posts  
-- View post details and comments  
-- Responsive layout (works on mobile and desktop)  
+- Visual post grid (responsive: 2–3 columns on desktop, 1 on mobile)
+- Category feeds: `popular` + tag-based categories (sidebar + dropdown)
+- Search posts by title
+- Open a post in an in-app modal (full content + comments)
+- Add comments locally and upvote/downvote locally (UI-only)
 
 ---
 
 ## Technologies Used
 
-- React  
-- Redux Toolkit  
-- JavaScript  
-- CSS  
+- React
+- Redux Toolkit
+- JavaScript
+- CSS
 
 ---
 
 ## How It Works
 
-This app fetches data from the Reddit API and stores it in Redux state.
-
-When the user selects a subreddit or searches:
-- a request is sent to the API  
-- data is stored in Redux  
-- components re-render with updated posts  
+- Posts are fetched from DummyJSON:
+  - `GET /posts?limit=20` for the default `popular` feed
+  - `GET /posts/tag/{slug}` for tag-based feeds
+- Post images are generated with Picsum (seeded by post id) so every post has a visual card.
+- Feed tags are fetched for the sidebar:
+  - `GET /posts/tags`
+- Comments are fetched when the user opens the post modal:
+  - `GET /posts/{id}/comments`
+- Upvotes/downvotes are UI-only, and added comments are saved locally in Redux (no backend).
 
 ---
 
@@ -57,12 +59,11 @@ npm start
    - Publish directory: `build`
 5. Click **Deploy site**.
 
-<!-- this is basic deploy setup for netlify -->
-
 ---
 
 ## Notes
 
+- The app uses direct client-side calls to DummyJSON and Picsum (no Reddit proxy function needed).
 - If local build fails because of OpenSSL on newer Node, run:
 
 ```bash

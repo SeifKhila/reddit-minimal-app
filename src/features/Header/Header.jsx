@@ -19,15 +19,21 @@ const Header = () => {
   // triggers new fetch
   const handleSubredditChange = (e) => {
     const selected = e.target.value;
-    dispatch(setSelectedSubreddit(`/r/${selected}`));
+    dispatch(setSelectedSubreddit(selected));
   };
 
-  const allowedSubreddits = ['popular', 'javascript', 'reactjs', 'webdev'];
-  const selectedName = selectedSubreddit
-    .replace(/^\/r\//, '')
-    .replace(/\/$/, '');
-  const dropdownValue = allowedSubreddits.includes(selectedName)
-    ? selectedName
+  const allowedFeeds = [
+    'popular',
+    'history',
+    'crime',
+    'life',
+    'love',
+    'mystery',
+    'nature',
+    'books',
+  ];
+  const dropdownValue = allowedFeeds.includes(selectedSubreddit)
+    ? selectedSubreddit
     : 'popular';
 
   const onSearchTermChange = (e) => {
@@ -48,9 +54,14 @@ const Header = () => {
     <header className="header">
       <div className="logo">
         <FaReddit className="logo-icon" />
-        <p>
-          Reddit<span>Minimal</span>
-        </p>
+        <div className="logo-text">
+          <p className="logo-title">
+            Reddit<span>Minimal</span>
+          </p>
+          <p className="logo-subtitle">
+              Discover visual posts by category
+          </p>
+        </div>
       </div>
       {/* top search area styled to look cleaner and easier to use */}
       <div className="top-controls">
@@ -63,9 +74,13 @@ const Header = () => {
             aria-label="Select subreddit"
           >
             <option value="popular">popular</option>
-            <option value="javascript">javascript</option>
-            <option value="reactjs">reactjs</option>
-            <option value="webdev">webdev</option>
+            <option value="history">history</option>
+            <option value="crime">crime</option>
+            <option value="life">life</option>
+            <option value="love">love</option>
+            <option value="mystery">mystery</option>
+            <option value="nature">nature</option>
+            <option value="books">books</option>
           </select>
         </div>
         {/* this handles searching posts by text */}

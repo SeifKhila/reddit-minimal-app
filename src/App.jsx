@@ -21,6 +21,16 @@ function App() {
             <Subreddits />
           </aside>
         </div>
+
+        <footer className="app-footer">
+          <div className="app-footer-inner">
+            <div className="app-footer-title">
+              RedditMinimal – React &amp; Redux Project
+            </div>
+            <div className="app-footer-sub">Built for portfolio demonstration</div>
+            <div className="app-footer-year">© {new Date().getFullYear()}</div>
+          </div>
+        </footer>
       </div>
     </div>
   );

@@ -7,7 +7,11 @@ import {
   fetchPosts,
   selectFilteredPosts,
   setSearchTerm,
+  setSelectedSubreddit,
   fetchComments,
+  addLocalComment,
+  editLocalComment,
+  deleteLocalComment,
 } from '../../store/redditSlice';
 import './Home.css';
 
@@ -22,13 +26,24 @@ const Home = () => {
     dispatch(fetchPosts(selectedSubreddit));
   }, [dispatch, selectedSubreddit]);
 
-  const onToggleComments = (index) => {
-    // get comments for clicked post
-    const getComments = (permalink) => {
-      dispatch(fetchComments(index, permalink));
-    };
+  const onFetchCommentsForPost = (index) => (postId) => {
+    // Comments are fetched when the user opens the modal (not on every render).
+    dispatch(fetchComments(index, postId));
+  };
 
-    return getComments;
+  const onAddLocalComment = (index) => (comment) => {
+    // "Add Comment" is local-only: we update the Redux post comments in-memory.
+    dispatch(addLocalComment({ index, comment }));
+  };
+
+  const onEditLocalComment = (index) => (commentId, newBody) => {
+    // Editing is local-only: update the comment text in Redux in-memory.
+    dispatch(editLocalComment({ index, commentId, newBody }));
+  };
+
+  const onDeleteLocalComment = (index) => (commentId) => {
+    // Deleting is local-only: remove the comment from Redux in-memory.
+    dispatch(deleteLocalComment({ index, commentId }));
   };
 
   if (isLoading) {
@@ -59,10 +74,27 @@ const Home = () => {
   if (posts.length === 0) {
     return (
       <div className="error">
-        <h2>No posts matching "{searchTerm}"</h2>
-        <button type="button" onClick={() => dispatch(setSearchTerm(''))}>
-          Go home
-        </button>
+        {searchTerm !== '' ? (
+          <>
+            <h2>No posts matching "{searchTerm}"</h2>
+            <button
+              type="button"
+              onClick={() => dispatch(setSearchTerm(''))}
+            >
+              Go home
+            </button>
+          </>
+        ) : (
+          <>
+            <h2>No posts available. Try another category.</h2>
+            <button
+              type="button"
+              onClick={() => dispatch(setSelectedSubreddit('popular'))}
+            >
+              Go popular
+            </button>
+          </>
+        )}
       </div>
     );
   }
@@ -74,7 +106,10 @@ const Home = () => {
         <Post
           key={post.id}
           post={post}
-          onToggleComments={onToggleComments(index)}
+          onFetchCommentsForPost={onFetchCommentsForPost(index)}
+          onAddLocalComment={onAddLocalComment(index)}
+          onEditLocalComment={onEditLocalComment(index)}
+          onDeleteLocalComment={onDeleteLocalComment(index)}
         />
       ))}
     </div>

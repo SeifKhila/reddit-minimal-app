@@ -13,9 +13,11 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-window.addEventListener("load", function () {
-  const preloader = document.getElementById("preloader");
+window.addEventListener('load', () => {
+  // Hide the simple preloader once the app finishes loading.
+  const preloader = document.getElementById('preloader');
   if (preloader) {
-    preloader.style.display = "none";
+    preloader.style.display = 'none';
   }
 });
+

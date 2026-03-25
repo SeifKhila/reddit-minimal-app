@@ -2,12 +2,12 @@
   /* sidebar cleaned up for better alignment */
   width: 100%;
   max-width: 260px;
-  background: #fff;
+  background: var(--color-foreground);
   padding: 12px;
   margin: 0;
   border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
   box-sizing: border-box;
 }
 
@@ -26,7 +26,7 @@
   font-weight: 600;
   cursor: pointer;
   width: 100%;
-  padding: 6px 0;
+  padding: 8px 10px;
   border-radius: 4px;
   text-align: left;
 }
@@ -37,19 +37,23 @@
 
 .selected-subreddit {
   border-left: 3px solid var(--color-branding);
-  background: transparent;
+  background: rgba(59, 130, 246, 0.08);
   padding-left: 8px;
   border-radius: 0;
 }
 
 .subreddit-card button:hover {
   /* added small hover effect for better interaction */
-  background: #f3f4f6;
+  background: rgba(59, 130, 246, 0.12);
 }
 
 .subreddits-list {
   list-style: none;
   padding: 0;
+}
+
+.subreddits-list li {
+  margin: 6px 0;
 }
 
 .subreddit-icon {

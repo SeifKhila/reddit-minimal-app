@@ -17,15 +17,28 @@
 
 /* keep post layout smaller so it looks more like real reddit and easier to read */
 .posts-container {
-  max-width: 700px;
-  margin: 0;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media only screen and (max-width: 768px) {
   /* mobile layout changes here */
   .posts-container {
+    grid-template-columns: 1fr;
     max-width: 100%;
     padding: 0;
+  }
+}
+
+@media only screen and (max-width: 1024px) and (min-width: 769px) {
+  .posts-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
   }
 }
